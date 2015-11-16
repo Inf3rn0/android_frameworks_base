@@ -384,6 +384,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     mFloatingButton.getLayoutParams();
+            params.topMargin = taskStackBounds.top;
+
             if (mSearchBar == null || isLandscape) {
                 params.topMargin = mContext.getResources().
                     getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height)

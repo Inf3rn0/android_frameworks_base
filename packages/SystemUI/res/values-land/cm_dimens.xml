@@ -18,7 +18,6 @@
 <resources>
     <dimen name="phone_height">210dp</dimen>
     <dimen name="phone_width">420dp</dimen>
-
     <!-- Floating action button -->
     <dimen name="floating_action_button_height">54dp</dimen>
     <dimen name="floating_action_button_width">54dp</dimen>

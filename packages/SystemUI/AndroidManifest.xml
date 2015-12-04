@@ -179,6 +179,15 @@
         <receiver android:name=".screenshot.TrashScreenshot"
                 android:exported="true" />
 
+        <!-- started from PhoneWindowManager
+             TODO: Should have an android:permission attribute -->
+        <service android:name=".omni.screenrecord.TakeScreenrecordService"
+            android:process=":screenrecord"
+            android:exported="false" />
+
+        <service android:name=".LoadAverageService"
+                android:exported="true" />
+
  	<!-- started from PhoneWindowManager
              TODO: Should have an android:permission attribute -->
         <service android:name=".aicp.onthego.OnTheGoService"

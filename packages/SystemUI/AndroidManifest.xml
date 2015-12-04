@@ -181,10 +181,6 @@
 
         <!-- started from PhoneWindowManager
              TODO: Should have an android:permission attribute -->
-        <service android:name=".omni.screenrecord.TakeScreenrecordService"
-            android:process=":screenrecord"
-            android:exported="false" />
-
         <service android:name=".LoadAverageService"
                 android:exported="true" />
 
@@ -199,9 +195,6 @@
         <service android:name=".omni.screenrecord.TakeScreenrecordService"
             android:process=":screenrecord"
             android:exported="false" />
-
-        <service android:name=".LoadAverageService"
-                android:exported="true" />
 
         <service android:name=".ImageWallpaper"
                 android:permission="android.permission.BIND_WALLPAPER"

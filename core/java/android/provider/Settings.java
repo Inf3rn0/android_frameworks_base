@@ -3716,6 +3716,19 @@ public final class Settings {
         public static final String ON_THE_GO_SERVICE_RESTART = "on_the_go_service_restart";
 
         /**
+         * Alternative recent apps integration using OmniSwitch
+         * @hide
+         */
+        public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
+
+        /**
+         * Whether to mute annoying notifications
+         * @hide
+         */
+        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD =
+                "mute_annoying_notifications_threshold";
+
+        /**
          * These are all hidden system settings.
          *
          * @hide

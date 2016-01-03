@@ -83,6 +83,10 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     View mClearRecents;
     View mFloatingButton;
 
+    TextView mMemText;
+    ProgressBar mMemBar;
+    private ActivityManager mAm;
+
     public RecentsView(Context context) {
         super(context);
     }
@@ -100,6 +104,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mConfig = RecentsConfiguration.getInstance();
         mInflater = LayoutInflater.from(context);
         mLayoutAlgorithm = new RecentsViewLayoutAlgorithm(mConfig);
+        mAm = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     }
 
     /** Sets the callbacks */
@@ -355,6 +360,19 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     mFloatingButton.getLayoutParams();
             params.topMargin = taskStackBounds.top;
+            if (mSearchBar == null || isLandscape) {
+                params.topMargin = mContext.getResources().
+                    getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height)
+                        + mContext.getResources().
+                              getDimensionPixelSize(R.dimen.floating_action_button_margin_top);
+            } else {
+                params.topMargin = mContext.getResources().
+                    getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height)
+                        + searchBarSpaceBounds.height()
+                            + mContext.getResources().
+                                getDimensionPixelSize(R.dimen.floating_action_button_margin_top);
+            }
+
             switch (clearRecentsLocation) {
                 case Constants.DebugFlags.App.RECENTS_CLEAR_ALL_TOP_LEFT:
                     params.gravity = Gravity.TOP | Gravity.LEFT;
@@ -417,6 +435,52 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 dismissAllTasksAnimated();
             }
         });
+        mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
+        mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
+
+        updateMemoryStatus();
+    }
+
+    private boolean showMemDisplay() {
+        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
+
+        if (!enableMemDisplay) {
+            mMemText.setVisibility(View.GONE);
+            mMemBar.setVisibility(View.GONE);
+            return false;
+        }
+        mMemText.setVisibility(View.VISIBLE);
+        mMemBar.setVisibility(View.VISIBLE);
+
+        updateMemoryStatus();
+        return true;
+    }
+
+    public void updateMemoryStatus() {
+        if (mMemText.getVisibility() == View.GONE
+                || mMemBar.getVisibility() == View.GONE) return;
+
+            int max = (int)(readTotalMem() / 1048576L);
+            int currentMem = (int)(readAvailMem() / 1048576L);
+
+            mMemText.setText("Free RAM: " + String.valueOf(currentMem) + "MB");
+            mMemBar.setMax(max);
+            mMemBar.setProgress(currentMem);
+    }
+
+    private long readAvailMem() {
+        MemoryInfo mi = new MemoryInfo();
+        mAm.getMemoryInfo(mi);
+        long availableMem = mi.availMem;
+        return availableMem;
+    }
+
+    private long readTotalMem() {
+        MemoryInfo mi = new MemoryInfo();
+        mAm.getMemoryInfo(mi);
+        long totalMem = mi.totalMem;
+        return totalMem;
     }
 
     /**
@@ -433,7 +497,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                     searchBarSpaceBounds.right, searchBarSpaceBounds.bottom);
         }
 
-        // Layout each TaskStackView with the full width and height of the window since the 
+        // Layout each TaskStackView with the full width and height of the window since the
         // transition view is a child of that stack view
         List<TaskStackView> stackViews = getTaskStackViews();
         int stackCount = stackViews.size();

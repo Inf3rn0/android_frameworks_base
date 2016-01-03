@@ -1499,8 +1499,8 @@ public class AppTransition implements Dump {
             mActivityAnimations[i] = Settings.System.getInt(resolver, Settings.System.ACTIVITY_ANIMATION_CONTROLS[i], 0);
         }
 
-        mExitOnly = Settings.System.getBoolean(resolver, Settings.System.ANIMATION_CONTROLS_EXIT_ONLY, true);
-        mReverseExit = Settings.System.getBoolean(resolver, Settings.System.ANIMATION_CONTROLS_REVERSE_EXIT, false);
+        mExitOnly = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_EXIT_ONLY, 1) == 1;
+        mReverseExit = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_REVERSE_EXIT, 0) == 1;
 
         mAnimationDuration = 15 * Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_DURATION, 25);
     }

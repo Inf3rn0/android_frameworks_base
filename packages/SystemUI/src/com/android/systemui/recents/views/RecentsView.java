@@ -16,10 +16,18 @@
 
 package com.android.systemui.recents.views;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.ContentResolver;
+import android.content.res.Resources;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -31,12 +39,15 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ViewAnimationUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManagerGlobal;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
@@ -49,6 +60,11 @@ import com.android.systemui.recents.model.RecentsTaskLoader;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.recents.model.TaskStack;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -339,15 +355,41 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+        Rect searchBarSpaceBounds = new Rect();
+
+        int paddingStatusBar = mContext.getResources().getDimensionPixelSize(R.dimen.status_bar_height) / 2;
+
+        final Resources res = getContext().getResources();
+        boolean isLandscape = res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 1) == 1;
 
         // Get the search bar bounds and measure the search bar layout
-        Rect searchBarSpaceBounds = new Rect();
-        if (mSearchBar != null && mConfig.searchBarEnabled) {
+        if (mSearchBar != null) {
             mConfig.getSearchBarBounds(width, height, mConfig.systemInsets.top, searchBarSpaceBounds);
             mSearchBar.measure(
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.width(), MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(searchBarSpaceBounds.height(), MeasureSpec.EXACTLY));
+
+            int paddingSearchBar = searchBarSpaceBounds.height() + 25;
+
+            if (enableMemDisplay) {
+                if (!isLandscape) {
+                    mMemBar.setPadding(0, paddingSearchBar, 0, 0);
+                } else {
+                    mMemBar.setPadding(0, paddingStatusBar, 0, 0);
+                }
+            }
+        } else {
+            if (enableMemDisplay) {
+                mMemBar.setPadding(0, paddingStatusBar, 0, 0);
+            }
         }
+        showMemDisplay();
+
+        boolean showClearAllRecents = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SHOW_CLEAR_ALL_RECENTS, 0, UserHandle.USER_CURRENT) != 0;
 
         Rect taskStackBounds = new Rect();
         mConfig.getAvailableTaskStackBounds(width, height, mConfig.systemInsets.top,
@@ -360,7 +402,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     mFloatingButton.getLayoutParams();
-            params.topMargin = taskStackBounds.top;
             if (mSearchBar == null || isLandscape) {
                 params.topMargin = mContext.getResources().
                     getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height)
@@ -424,6 +465,28 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         if (mClearRecents != null) {
             mClearRecents.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void startFABanimation() {
+        // Animate the action button in
+        mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
+        mFloatingButton.animate().alpha(1f)
+                .setStartDelay(mConfig.taskBarEnterAnimDelay)
+                .setDuration(mConfig.taskBarEnterAnimDuration)
+                .setInterpolator(mConfig.fastOutLinearInInterpolator)
+                .withLayer()
+                .start();
+    }
+
+    public void endFABanimation() {
+        // Animate the action button away
+        mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
+        mFloatingButton.animate().alpha(0f)
+                .setStartDelay(0)
+                .setDuration(mConfig.taskBarExitAnimDuration)
+                .setInterpolator(mConfig.fastOutLinearInInterpolator)
+                .withLayer()
+                .start();
     }
 
     @Override
@@ -490,7 +553,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         // Get the search bar bounds so that we lay it out
-        if (mSearchBar != null && mConfig.searchBarEnabled) {
+        if (mSearchBar != null) {
             Rect searchBarSpaceBounds = new Rect();
             mConfig.getSearchBarBounds(getMeasuredWidth(), getMeasuredHeight(),
                     mConfig.systemInsets.top, searchBarSpaceBounds);
@@ -774,6 +837,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
         // Remove the old task from activity manager
         loader.getSystemServicesProxy().removeTask(t.key.id);
+
+        updateMemoryStatus();
     }
 
     @Override
@@ -786,6 +851,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
 
         mCb.onAllTaskViewsDismissed();
+
+        updateMemoryStatus();
 
         // Keep track of all-deletions
         MetricsLogger.count(getContext(), "overview_task_all_dismissed", 1);
@@ -850,3 +917,4 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
     }
 }
+

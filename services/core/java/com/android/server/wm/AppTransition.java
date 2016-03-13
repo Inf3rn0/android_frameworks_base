@@ -198,11 +198,8 @@ public class AppTransition implements Dump {
     private int[] mActivityAnimations = new int[11];
     private int mAnimationDuration;
     private boolean mIsResId = false;
-<<<<<<< HEAD
     private boolean mExitOnly;
     private boolean mReverseExit;
-=======
->>>>>>> 9fad07d... Fw_base - AOKP Animations remove override app anim feature
 
     private int mCurrentUserId = 0;
 
@@ -1482,13 +1479,10 @@ public class AppTransition implements Dump {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ANIMATION_CONTROLS_DURATION), false, this);
-<<<<<<< HEAD
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ANIMATION_CONTROLS_EXIT_ONLY), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ANIMATION_CONTROLS_REVERSE_EXIT), false, this);
-=======
->>>>>>> 9fad07d... Fw_base - AOKP Animations remove override app anim feature
             for (int i = 0; i < 11; i++) {
 	            resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ACTIVITY_ANIMATION_CONTROLS[i]), false, this);
@@ -1506,14 +1500,9 @@ public class AppTransition implements Dump {
             mActivityAnimations[i] = Settings.System.getInt(resolver, Settings.System.ACTIVITY_ANIMATION_CONTROLS[i], 0);
         }
 
-<<<<<<< HEAD
         mExitOnly = Settings.System.getBoolean(resolver, Settings.System.ANIMATION_CONTROLS_EXIT_ONLY, true);
         mReverseExit = Settings.System.getBoolean(resolver, Settings.System.ANIMATION_CONTROLS_REVERSE_EXIT, false);
 
         mAnimationDuration = 15 * Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_DURATION, 25);
-=======
-        int temp = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_DURATION, 0);
-        mAnimationDuration = temp * 15;
->>>>>>> 9fad07d... Fw_base - AOKP Animations remove override app anim feature
     }
 }

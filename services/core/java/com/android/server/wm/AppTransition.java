@@ -1286,7 +1286,6 @@ public class AppTransition implements Dump {
 
     void overridePendingAppTransitionAspectScaledThumb(Bitmap srcThumb, int startX, int startY,
             int targetWidth, int targetHeight, IRemoteCallback startedCallback, boolean scaleUp) {
-        if (mNoOverrides) return;
         if (isTransitionSet()) {
             mNextAppTransitionType = scaleUp ? NEXT_TRANSIT_TYPE_THUMBNAIL_ASPECT_SCALE_UP
                     : NEXT_TRANSIT_TYPE_THUMBNAIL_ASPECT_SCALE_DOWN;

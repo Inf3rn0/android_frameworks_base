@@ -73,7 +73,7 @@ import static com.android.internal.R.styleable.WindowAnimation_wallpaperIntraOpe
 import static com.android.internal.R.styleable.WindowAnimation_wallpaperOpenEnterAnimation;
 import static com.android.internal.R.styleable.WindowAnimation_wallpaperOpenExitAnimation;
 
-import com.android.internal.util.crdroid.AwesomeAnimationHelper;
+import com.android.internal.util.benzo.AwesomeAnimationHelper;
 import android.widget.Toast;
 
 // State management of app transitions.  When we are preparing for a
@@ -1226,7 +1226,6 @@ public class AppTransition implements Dump {
 
     void overridePendingAppTransition(String packageName, int enterAnim, int exitAnim,
                                              IRemoteCallback startedCallback) {
-        if (mNoOverrides) return;
         if (isTransitionSet()) {
             mNextAppTransitionType = NEXT_TRANSIT_TYPE_CUSTOM;
             mNextAppTransitionPackage = packageName;
@@ -1242,7 +1241,6 @@ public class AppTransition implements Dump {
 
     void overridePendingAppTransitionScaleUp(int startX, int startY, int startWidth,
                                                     int startHeight) {
-        if (mNoOverrides) return;
         if (isTransitionSet()) {
             mNextAppTransitionType = NEXT_TRANSIT_TYPE_SCALE_UP;
             mNextAppTransitionPackage = null;
@@ -1271,7 +1269,6 @@ public class AppTransition implements Dump {
 
     void overridePendingAppTransitionThumb(Bitmap srcThumb, int startX, int startY,
                                            IRemoteCallback startedCallback, boolean scaleUp) {
-        if (mNoOverrides) return;
         if (isTransitionSet()) {
             mNextAppTransitionType = scaleUp ? NEXT_TRANSIT_TYPE_THUMBNAIL_SCALE_UP
                     : NEXT_TRANSIT_TYPE_THUMBNAIL_SCALE_DOWN;
@@ -1289,7 +1286,6 @@ public class AppTransition implements Dump {
 
     void overridePendingAppTransitionAspectScaledThumb(Bitmap srcThumb, int startX, int startY,
             int targetWidth, int targetHeight, IRemoteCallback startedCallback, boolean scaleUp) {
-        if (mNoOverrides) return;
         if (isTransitionSet()) {
             mNextAppTransitionType = scaleUp ? NEXT_TRANSIT_TYPE_THUMBNAIL_ASPECT_SCALE_UP
                     : NEXT_TRANSIT_TYPE_THUMBNAIL_ASPECT_SCALE_DOWN;
@@ -1503,7 +1499,6 @@ public class AppTransition implements Dump {
             mActivityAnimations[i] = Settings.System.getInt(resolver, Settings.System.ACTIVITY_ANIMATION_CONTROLS[i], 0);
         }
 
-        mNoOverrides = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_NO_OVERRIDE, 0) == 1;
         mExitOnly = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_EXIT_ONLY, 1) == 1;
         mReverseExit = Settings.System.getInt(resolver, Settings.System.ANIMATION_CONTROLS_REVERSE_EXIT, 0) == 1;
 

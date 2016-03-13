@@ -32,7 +32,7 @@ version="1.0" encoding="utf-8"?>
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/memory_usage_item_background" >
+    android:background="#0000" >
 
         <Button
             android:id="@+id/kill_all_button"
@@ -48,7 +48,7 @@ version="1.0" encoding="utf-8"?>
         android:layout_height="20dip"
         android:paddingLeft="10dip"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/memory_usage_text_text"
+        android:textColor="#ffff"
         android:layout_alignParentLeft="true" />
 
     <ProgressBar

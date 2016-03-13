@@ -198,10 +198,6 @@ public class AppTransition implements Dump {
     private int[] mActivityAnimations = new int[11];
     private int mAnimationDuration;
     private boolean mIsResId = false;
-    private boolean mNoOverrides;
-    private boolean mExitOnly;
-    private boolean mReverseExit;
-
     private boolean mExitOnly;
     private boolean mReverseExit;
 

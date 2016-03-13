@@ -26,6 +26,4 @@
     <!-- The task item height in task list. -->
     <dimen name="task_manager_item_height">40dip</dimen>
 
-    <!-- The task item height in task list. -->
-    <dimen name="task_manager_item_height">40dip</dimen>
 </resources>

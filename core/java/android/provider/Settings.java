@@ -3759,12 +3759,6 @@ public final class Settings {
         }
 
         /**
-         * Alternative recent apps integration using OmniSwitch
-         * @hide
-         */
-        public static final String RECENTS_USE_OMNISWITCH = "recents_use_omniswitch";
-
-        /**
          * Whether to mute annoying notifications
          * @hide
          */

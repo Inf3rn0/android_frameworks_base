@@ -490,48 +490,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         updateMemoryStatus();
     }
 
-    private boolean showMemDisplay() {
-        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
-
-        if (!enableMemDisplay) {
-            mMemText.setVisibility(View.GONE);
-            mMemBar.setVisibility(View.GONE);
-            return false;
-        }
-        mMemText.setVisibility(View.VISIBLE);
-        mMemBar.setVisibility(View.VISIBLE);
-
-        updateMemoryStatus();
-        return true;
-    }
-
-    public void updateMemoryStatus() {
-        if (mMemText.getVisibility() == View.GONE
-                || mMemBar.getVisibility() == View.GONE) return;
-
-            int max = (int)(readTotalMem() / 1048576L);
-            int currentMem = (int)(readAvailMem() / 1048576L);
-
-            mMemText.setText("Free RAM: " + String.valueOf(currentMem) + "MB");
-            mMemBar.setMax(max);
-            mMemBar.setProgress(currentMem);
-    }
-
-    private long readAvailMem() {
-        MemoryInfo mi = new MemoryInfo();
-        mAm.getMemoryInfo(mi);
-        long availableMem = mi.availMem;
-        return availableMem;
-    }
-
-    private long readTotalMem() {
-        MemoryInfo mi = new MemoryInfo();
-        mAm.getMemoryInfo(mi);
-        long totalMem = mi.totalMem;
-        return totalMem;
-    }
-
     /**
      * This is called with the full size of the window since we are handling our own insets.
      */

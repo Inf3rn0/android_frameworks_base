@@ -17,7 +17,6 @@
 package com.android.systemui.recents.views;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
@@ -100,8 +99,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     View mClearRecents;
     View mFloatingButton;
 
-    TextView mMemText;
-    ProgressBar mMemBar;
     private ActivityManager mAm;
 
     public RecentsView(Context context) {
@@ -484,10 +481,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 dismissAllTasksAnimated();
             }
         });
-        mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
-        mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
-
-        updateMemoryStatus();
     }
 
     /**
@@ -781,7 +774,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         // Remove the old task from activity manager
         loader.getSystemServicesProxy().removeTask(t.key.id);
 
-        updateMemoryStatus();
     }
 
     @Override
@@ -794,8 +786,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         }
 
         mCb.onAllTaskViewsDismissed();
-
-        updateMemoryStatus();
 
         // Keep track of all-deletions
         MetricsLogger.count(getContext(), "overview_task_all_dismissed", 1);

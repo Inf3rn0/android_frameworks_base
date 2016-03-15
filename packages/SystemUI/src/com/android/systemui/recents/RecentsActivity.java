@@ -25,16 +25,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.internal.logging.MetricsLogger;
@@ -256,19 +252,6 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
                 }
             });
             mRecentsView.setSearchBarVisibility(View.GONE);
-            findViewById(R.id.floating_action_button).setVisibility(View.GONE);
-
-            // Make the animation of empty recents animatable
-            Drawable drawable = getResources().getDrawable(R.drawable.no_recents, null);
-            ImageView imageView = (ImageView) mEmptyView.findViewById(R.id.no_recents_holder);
-            if (imageView != null){
-                imageView.setImageDrawable(drawable);
-            }
-
-            if (drawable instanceof Animatable){
-                ((Animatable)drawable).start();
-            }
-
         } else {
             if (mEmptyView != null) {
                 mEmptyView.setVisibility(View.GONE);

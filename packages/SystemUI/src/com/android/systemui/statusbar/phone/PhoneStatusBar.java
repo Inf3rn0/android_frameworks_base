@@ -805,7 +805,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         mStatusBarWindow = new StatusBarWindowView(mContext, null);
         mStatusBarWindow.setService(this);
-        
+
         super.start(); // calls createAndAddWindows()
 
         mMediaSessionManager
@@ -1314,7 +1314,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         }
 
-        mVisualizerView.setKeyguardMonitor(mKeyguardMonitor);
         mHeader.setNextAlarmController(mNextAlarmController);
         mHeader.setWeatherController(mWeatherController);
 
@@ -4729,6 +4728,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             clearNotificationEffects();
         }
         mState = state;
+        mVisualizerView.setStatusBarState(state);
         mGroupManager.setStatusBarState(state);
         mStatusBarWindowManager.setStatusBarState(state);
         updateDozing();
@@ -4757,6 +4757,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public void onHintFinished() {
         // Delay the reset a bit so the user can read the text.
         mKeyguardIndicationController.hideTransientIndicationDelayed(HINT_RESET_DELAY_MS);
+        mKeyguardBottomArea.expand(false);
     }
 
     public void onCameraHintStarted(String hint) {
@@ -4947,14 +4948,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mDozeScrimController.onScreenTurnedOn();
         mVisualizerView.setVisible(true);
         if (mLiveLockScreenController.isShowingLiveLockScreenView()) {
-            mLiveLockScreenController.getLiveLockScreenView().onScreenTurnedOn();
+            mLiveLockScreenController.onScreenTurnedOn();
         }
     }
 
     public void onScreenTurnedOff() {
         mVisualizerView.setVisible(false);
         if (mLiveLockScreenController.isShowingLiveLockScreenView()) {
-            mLiveLockScreenController.getLiveLockScreenView().onScreenTurnedOff();
+            mLiveLockScreenController.onScreenTurnedOff();
         }
     }
 
